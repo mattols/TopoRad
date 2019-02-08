@@ -23,7 +23,7 @@ load.wv.dat <- function(dpath, gpath){
 }
 
 ###############################################
-sw.glacier.res <- function(savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/"){
+sw.glacier.res <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/"){
   # iterates through all glaciers indices given and calls sw.res
   # returns anomaly dataframe for all glaciers
   strt = Sys.time()
@@ -31,7 +31,7 @@ sw.glacier.res <- function(savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/var
   g_num     <- length(glaciers@polygons)
   for (g in 1:g_num){
     # run for single glacier
-    dfg <- sw.res(demL, shape = glaciers[g,], gn = g, savepath = savepath) # anomaly for g
+    dfg <- sw.res(demL, shape = glaciers[g,], gn = g, date = date, savepath = savepath) # anomaly for g
     
     # compile dataframe
     if (g == 1){dfga = dfg} else{dfga = rbind(dfga,dfg)}
@@ -141,7 +141,7 @@ sw.res.dataframe <- function(tfstk){
 }
 
 ###############################################
-sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE){
+sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE, plot_moment = FALSE){
   # daily sw variables -> call sw.moment()
   year  <- format(date,'%Y')
   month <- format(date,'%m')
@@ -170,7 +170,11 @@ sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE){
   print(paste("...cycling through", length(zenith), "moments"))
   for (m in 1:length(zenith)){
     # calculate fluxes at time m
-    sw.moment(sv[m,], zenith[m], azimuth_eq[m], jd[m])
+    if (plot_moment){
+      sw.moment(sv[m,], zenith[m], azimuth_eq[m], jd[m], plot_moment=m, zlen = length(zenith))
+    } else{
+      sw.moment(sv[m,], zenith[m], azimuth_eq[m], jd[m])
+    }
   }
   # create final raster stack
   if (sw_totals){
@@ -183,37 +187,43 @@ sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE){
 }
 
 ###############################################
-sw.moment <- function(sv, zenith, azimuth_eq, jd){
+sw.moment <- function(sv, zenith, azimuth_eq, jd, alphaT = 0.45, plot_moment=NULL, zlen= NULL){
   # ! call topo.forcing.model
   # calculates all shortwave fluxes during the given moment of the day
   
-  # insolation arriving perpendicular to solar beam
-  Idirdif = insolation(zenith,jd,height,visibility,RH,tempK,0.002,0.45)
-  Ib = matrix(Idirdif[,1],nrow=nrow(dem),ncol=ncol(dem))
-  Id = matrix(Idirdif[,2],nrow=nrow(dem),ncol=ncol(dem))
   # zenith and incident angles
   cos_inc <- cos.slope(zenith, azimuth_eq, aspect = s_a[[2]], slope = s_a[[1]])
   cos_sfc <- cos(radians(zenith))
   
+  # insolation arriving perpendicular to solar beam (direct and diffuse)
+  Idirdif = insolation(zenith,jd,height,visibility,RH,tempK,0.002,0.45)
+  Ib = matrix(Idirdif[,1],nrow=nrow(dem),ncol=ncol(dem))
+  Id = matrix(Idirdif[,2],nrow=nrow(dem),ncol=ncol(dem))
+  
+  # terrain-reflected
+  # Ir = Iglob * (1 - VF_mat) * alphaT) 
+  # Ir = (Ib*sh + Id * VF_mat) * 0.45 * (1 - VF_mat) * cos_sfc[m]
+  Iglob = (Ib + Id * VF_mat)*cos_sfc
+  Ir = Iglob * (as.matrix((1 + cos(s_a[[1]]))/2) - VF_mat) * alphaT # (Hetrick 1993)
+  Ir[Ir < 0 ] = 0
+  # Ir = Iglob * (1 - VF_mat) * alphaT # Dozier (Hetrick 1993)
+  
   # topographic shading
   sh = doshade(d_mat, sv, dl=dem_res)
   
-  # Run toposol models (values continuously saved in memory)
-  topo.forcing.models(Ib, Id, sh, cos_inc, cos_sfc)
+  # plot moment (optional)
+  if (!is.null(plot_moment)){
+    p.sw.moment(Ib, Id, Ir, sh, cos_inc, cos_sfc, moment = plot_moment, zz = zlen)
+  } else{
+    # Run toposol models (values continuously saved in memory)
+    topo.forcing.models(Ib, Id, Ir, sh, cos_inc, cos_sfc)
+  }
 }
 
 ###############################################
-topo.forcing.models <- function(Ib, Id, sh, cos_inc, cos_sfc, alphaT = 0.45){
+topo.forcing.models <- function(Ib, Id, Ir, sh, cos_inc, cos_sfc){
   # add values for moment 
-  # average global radiation and terrain-reflected radiation
-  #Ir = Iglob * (1 - VF_mat) * alphaT) # Ir = (Ib*sh + Id * VF_mat) * 0.45 * (1 - VF_mat) * cos_sfc[m]
-  Iglob = (Ib + Id * VF_mat)*cos_sfc
-  Ir = Iglob * (as.matrix((1 + cos(s_a[[1]]))/2) - VF_mat) * alphaT # Dozier (Hetrick 1993)
-  Ir[Ir < 0 ] = 0
-  # Ir = Iglob * (1 - VF_mat) * alphaT # Dozier (Hetrick 1993)
-
   
-        
   ## MODELS
   model_flat      <<- model_flat        +   (Ib)*cos_sfc
   model_flat_base <<- model_flat_base   +   (Ib + Id)*cos_sfc
@@ -247,11 +257,11 @@ sw.totals.stk <- function(keepAll = FALSE, mask=FALSE, savevar = NULL){
   dt = (15*15)/24
   
   if (keepALL){
-    m1 <-     make.raster((model_ref * dt), dem)
-    m2 <-     make.raster((model_ref * dt), dem)
-    m3 <-     make.raster((model_ref * dt), dem)
-    m4 <-     make.raster((model_ref * dt), dem)
-    m5 <-     make.raster((model_ref * dt), dem)
+    m1 <-     make.raster((model_flat * dt), dem)
+    m2 <-     make.raster((model_flat_base * dt), dem)
+    m3 <-     make.raster((model_inc_sr * dt), dem)
+    m4 <-     make.raster((model_inc_sr * dt), dem)
+    m5 <-     make.raster((model_vf * dt), dem)
     m6 <-     make.raster((model_ref * dt), dem)
     stk = stack(m1, m2, m3, m4, m5, m6, make.raster(VF_mat,dem), dem)
     names(stk) = c("Sw.dir.flat","Sw.dirdif.flat","Sw.dir.slope","Sw.dirdif.shade.slope",
