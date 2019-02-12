@@ -52,9 +52,9 @@ p.sw.anom <- function(df, y_lim = c(-100,150), plot4 = TRUE, mods_plot4 = c(1,4,
   l_wd = c(4, rep(2, length(res_ls) - 1))
   
   if(plot4){
-    par(mfrow=c(2,5))
-    par(oma = c(1,3,0,0))
-    par(mar=c(3,1,2,1))
+    # par(mfrow=c(2,5))
+    # par(oma = c(1,3,0,0))
+    # par(mar=c(3,1,2,1))
     
     #mod_select = c(1,4,6,7)
     #mod_select = c(1,4:6)
@@ -123,8 +123,8 @@ p.sw.elv <- function(df, res=NULL, y_lim = c(-250,100), placeLegend = 'bottomlef
   # plot anomaly values from dataframe (define resolution)
   
   # set plot params
-  par(mfrow=c(1,1))
-  par(mar=c(5,5.8,2,2))
+  # par(mfrow=c(1,1))
+  # par(mar=c(5,5.8,2,2))
   l_ty = c(5,1,1,1,3,4,1)
   l_wd = c(3,4,4,4,3,3,5)
   cols = c('steelblue',brewer.pal(6,'Reds')[3:5],'palegreen4','orange2','slategray4')
@@ -166,7 +166,7 @@ p.sw.elv <- function(df, res=NULL, y_lim = c(-250,100), placeLegend = 'bottomlef
   abline(h=0,lty=3)
   if(!is.null(placeLegend)){
     legend(placeLegend,mod_names,col=cols[mod_select],lwd=l_wd[mod_select],
-           lty=l_ty[mod_select],cex=1.6,bty='n')
+           lty=l_ty[mod_select],cex=1.4,bty='n')
   }
 }
 

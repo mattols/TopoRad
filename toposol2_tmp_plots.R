@@ -39,19 +39,6 @@ dfa <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/june21_all/dfa_
 ## FIG 2 - diagram
 # use ts_plot_test.R
 
-#####################
-## FIG 3 - north and south glaciers
-# sun hour
-# use ts_plot_test
-location.variables(demL, shape = glaciers[8,], resampleFactor = 3)
-
-# north glacier
-dftf_n <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/march21_all/dftf_2.csv")
-p.sw.elv(dftf_n,res=30, y_lim = c(-330,100))
-
-# south glacier
-dftf_s <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/march21_all/dftf_8.csv")
-p.sw.elv(dftf_s,res=30, y_lim = c(-330,100))
 
 #####################
 ## FIG 4 - maps or boxplots?
@@ -69,21 +56,6 @@ for (i in c(1,4,12,33,65,130)){
 p.sw.box(dfa, drop_res = c(1,4))
 p.sw.box(dftf)
 
-#####################
-## FIG 5 - anomalies
-#
-for (i in 1:10){
-  dfa <- read.csv(paste0("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dec21_all/dfa_",i,".csv"))
-  p.sw.anom(dfa,y_lim = c(-100,200))
-  legend("bottomleft",legend=i)
-  print(i)
-}
-dfa2j <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/june21_all/dfa_2.csv")
-p.sw.anom(dfa2j,y_lim = c(-30,100))
-dfa2m <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/march21_all/dfa_2.csv")
-p.sw.anom(dfa2m,y_lim = c(-30,130))
-dfa2d <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dec21_all/dfa_2.csv")
-p.sw.anom(dfa2d,y_lim = c(-100,200))
 
 #####################
 ## FIG 6 - all 10 glaciers
