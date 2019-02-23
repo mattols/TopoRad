@@ -60,16 +60,15 @@ sw.res <- function(demL, shape, gn = NA, date = ISOdate(2017, 6, 21, 0), resampl
     # save output of each resolution to one dataframe
     dft <- sw.res.dataframe(tfstk)
     
-    # plot values along elevation for given resolution
-    if (!is.null(isave)){
-      png(paste0(isave,"g",gn,"_r",rf,".png"),width = 970, height = 790)
-      #png(paste0(savepath,"images_tmp/test1",rf,".png"),width = 970, height = 790)
-      p.sw.elv(dft, y_lim = c(-250,150))
-      legend("topright", legend=paste("res:", round(dem_res,-1)),bty='n', cex=1.5)
-      legend("topleft", legend=paste("glacier:", gn), bty='n', cex=1.5)
-      dev.off()
-    }
-    
+    # # plot values along elevation for given resolution
+    # if (!is.null(isave)){
+    #   png(paste0(isave,"g",gn,"_r",rf,".png"),width = 970, height = 790)
+    #   #png(paste0(savepath,"images_tmp/test1",rf,".png"),width = 970, height = 790)
+    #   p.sw.elv(dft, y_lim = c(-250,150))
+    #   legend("topright", legend=paste("res:", round(dem_res,-1)),bty='n', cex=1.5)
+    #   legend("topleft", legend=paste("glacier:", gn), bty='n', cex=1.5)
+    #   dev.off()
+    # }
     
     if (length(resampleFactor) > 1){
       if (rf == 1){
@@ -293,7 +292,7 @@ sw.totals.stk <- function(keepAll = FALSE, mask=FALSE, savevar = NULL){
 }
 
 ###############################################
-sw.change.stk <- function(zenith, average=TRUE, percentage=FALSE, savevar = NULL, mask_inner = FALSE){
+sw.change.stk <- function(zenith, average=FALSE, percentage=FALSE, savevar = NULL, mask_inner = FALSE){
   # final values | returns raster stack
   # savevar should be path to folder
   if(percentage){
