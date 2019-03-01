@@ -179,7 +179,7 @@ sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE, plot_mom
   if (sw_totals){
     tfstk <- sw.totals.stk(keepAll = FALSE, mask=FALSE, savevar = NULL)
   } else{
-    tfstk = sw.change.stk(zenith, average=TRUE, percentage=FALSE, savevar = NULL, mask_inner = FALSE)
+    tfstk = sw.change.stk(zenith, average=TRUE, percentage=TRUE, savevar = NULL, mask_inner = FALSE)
   }
   print(proc.time() - ptm)
   return(tfstk)
@@ -292,12 +292,18 @@ sw.totals.stk <- function(keepAll = FALSE, mask=FALSE, savevar = NULL){
 }
 
 ###############################################
-sw.change.stk <- function(zenith, average=FALSE, percentage=FALSE, savevar = NULL, mask_inner = FALSE){
+sw.change.stk <- function(zenith, average=TRUE, percentage=FALSE, savevar = NULL, mask_inner = FALSE){
   # final values | returns raster stack
   # savevar should be path to folder
   if(percentage){
-    print("! Error - percentage is not an option yet...")
-    stop()
+    slope_asp   = ((model_inc_sh - model_flat_sh)/model_flat_sh)*10000
+    tot_sh      = ((model_flat_sh - model_flat)/model_flat)*10000
+    cast_sh     = ((model_inc_sh - model_inc_sr)/model_inc_sr)*10000
+    sh_rel      = ((tot_sh - cast_sh)/cast_sh)*10000
+    diff_t      = ((model_vf - model_vf_base)/model_vf_base)*10000
+    refl        = ((model_ref - model_vf)/model_vf)*10000
+    comb        = ((model_ref - model_flat_base)/model_flat_base)*10000
+    
   } else{
     # final models - change in irradiance (Wm-2)
     slope_asp   = model_inc_sh - model_flat_sh
@@ -319,7 +325,9 @@ sw.change.stk <- function(zenith, average=FALSE, percentage=FALSE, savevar = NUL
     I_ref =  make.raster((refl / length(zenith)), dem)
     I_com =  make.raster((comb / length(zenith)), dem)
   } else {
-    print("Final values will be daily sums")
+    print("ERROR::use sw.totals.stk() function instead!")
+    stop()
+    # print("Final values will be daily sums")
     I_sa =    make.raster((slope_asp), dem)
     I_sr =    make.raster((sh_rel), dem)
     I_cs =   make.raster((cast_sh), dem)

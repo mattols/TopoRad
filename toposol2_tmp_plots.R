@@ -150,23 +150,26 @@ for (i in 1:10){
 # resolution loop
 par(mfrow=c(1,1))
 res_n = c(8,30,90,250,500,1000)
-res_n = c(30,90,250,500,1000)
 ress_ls =  c(1,4,12,33,65,130)
-ress_ls =  c(4,12,33,65,130)
+
+colsgrad = rev(brewer.pal(11, "RdBu"))
+brk = c(-125,-100,-75,-50,-25,0,25,50,75,100,125)
+res_n = c(8,30,90,250,500)
+ress_ls =  c(1,4,12,33,65)
 for (i in ress_ls){
   location.variables(demL, glaciers[2,], resampleFactor = i)
   date = ISOdate(2017, 3, 21, 0)
   tfstk <- sw.daily(date)
   tfcom = tfstk
-  tfcom[values(tfcom) > 100] = 100
-  tfcom[values(tfcom) < -250] = -250
+  tfcom[values(tfcom) > 125] = 125
+  tfcom[values(tfcom) < -125] = -125
   # png(paste0('F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/figures/R_figs2/g2_r',i, '.png'))
   plot(tfcom[[7]], col=colsgrad, legend=F,
-       breaks = c(-250,-150,-100,-50,-75,-25,0,25,50,75,100))
+       breaks = brk)
   rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = 
          "grey")
   plot(tfcom[[7]], col=colsgrad, add=T, legend=F,
-       breaks = c(-250,-150,-100,-50,-75,-25,0,25,50,75,100))
+       breaks = brk)
   #plot(glacier,add=T)
   legend("topright",legend=paste(res_n[match(i,ress_ls)],'m'),cex=1.5, bty='n')
   # dev.off()

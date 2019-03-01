@@ -23,8 +23,8 @@ load.wv.dat(dpath, gpath)
 # df <- sw.res(demL, shape = glaciers[2,])                            #(create resolution anomaly df for north facing glacier)
 # df <- sw.res(demL, shape = glaciers[5,], gn= 5, resampleFactor = c(1,12), savepath = NULL)
 
-svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/"
-dfga <- sw.glacier.res(date = ISOdate(2017, 12, 21, 0))
+svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/perc_march/pm_"
+dfga <- sw.glacier.res(date = ISOdate(2017, 3, 21, 0), savepath = svp)
 
 # plotting?
 # 
@@ -43,6 +43,15 @@ dfga <- sw.glacier.res(date = ISOdate(2017, 12, 21, 0))
 
 # !!!!!!!!!!!!!!!!!!!!!!
 # TEST PLOTS (CHECK)
+dfa = read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/perc_march/percm21_dfa_2.csv")
+p.sw.anom(dfa,y_lim = c(-1,1))
+p.sw.anom(dfa,y_lim = c(-50,100), plot4 = FALSE, topovar = 4)
+
+# try to calculate percentage for 90m north glacier
+dftmp <- sw.res(demL, shape = glaciers[2,], gn= 2, resampleFactor = 4, savepath = NULL)
+p.sw.elv(dftmp,res=90, y_lim = c(-40,30))
+
+
 p.sw.anom(dfa,y_lim = c(-50,100))
 p.sw.elv(dfa,res=8)
 p.sw.anom(dfa,y_lim = c(-50,100), plot4 = FALSE, topovar = 9)
@@ -62,6 +71,9 @@ p.sw.moment2(mods= c(1,4), spt = spt) # ALSO SLOW
 # mods SA = c(1,4) | TS = c(1,5) | DIF = c(6,7) | REF = c())
 
 
+# PERCENTAGE
+dfp2 <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/percentage_m21_dftf_2.csv")
+p.sw.elv(dfp2,res=8, y_lim = c(-1,1), placeLegend = NULL)
 
 
 

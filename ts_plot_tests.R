@@ -4,6 +4,9 @@
 #
 #
 
+location.variables(demL, shape = glaciers[2,], resampleFactor = 3)
+
+
 cols = c('steelblue',brewer.pal(6,'Reds')[3:5],'palegreen4','orange2','slategray4') # brewer.pal(2,'Accent')
 
 # RUN
@@ -11,7 +14,7 @@ cols = c('steelblue',brewer.pal(6,'Reds')[3:5],'palegreen4','orange2','slategray
 s = s_a[[1]]
 a = s_a[[2]]
 Vf_dem = make.raster(VF_mat,dem)
-jd=JD(seq(ISOdate(2017,4,21,0),ISOdate(2017,4,21,23),by="15 mins"))
+jd=JD(seq(ISOdate(2017,3,21,0),ISOdate(2017,3,21,23),by="15 mins"))
 ## sun position and vector
 sv = sunvector(jd,lat_lon[1],lat_lon[2],tmz)
 sp1=sunpos(sv)
@@ -207,7 +210,7 @@ for (m in 1:length(sv[,1])){
 #################################################################################
 
 ### DIFFERENCE at a point
-#spt3 = SpatialPoints(coordinates(data.frame(86.948,28.04)),proj4string=crs(dem)) # NORTH
+spt3 = SpatialPoints(coordinates(data.frame(86.948,28.04)),proj4string=crs(dem)) # NORTH
 spt3 = SpatialPoints(coordinates(data.frame(86.625,28.0415)),proj4string=crs(dem)) # SOUTH
 
 # moment loop
@@ -272,6 +275,15 @@ for (m in 1:length(sv[,1])){
   # viewf = (model_vf - model_vf_base) + model_flat
   # refl = (model_ref - model_vf_base) + model_flat
   
+  # AS PERCENTAGE
+  # slope_asp = (model_inc_sh - model_flat_sh) / model_flat_sh
+  # tot_sh = (model_flat_sh - model_flat) / model_flat
+  # cast_sh = (model_inc_sh - model_inc_sr) / model_inc_sr
+  # sh_rel = ((tot_sh - cast_sh)) / cast_sh
+  # comb = (model_ref - model_flat_base) / model_flat_base
+  # viewf = (model_vf - model_vf_base) / model_vf_base
+  # refl = (model_ref - model_vf_base) / model_vf_base
+  
   
   # REMAKE RASTER
   tot_sh = make.raster(tot_sh, dem)
@@ -296,43 +308,43 @@ for (m in 1:length(sv[,1])){
   new_stk = mask(new_stk, glacier)
   
   
-  #EXTRACT
-  sapt = extract(new_stk[[1]], spt3)
-  tspt = extract(new_stk[[4]], spt3)
-  dspt = extract(new_stk[[5]], spt3)
-  rept = extract(new_stk[[6]], spt3)
-  copt = extract(new_stk[[7]], spt3)
+  # #EXTRACT
+  # sapt = extract(new_stk[[1]], spt3)
+  # tspt = extract(new_stk[[4]], spt3)
+  # dspt = extract(new_stk[[5]], spt3)
+  # rept = extract(new_stk[[6]], spt3)
+  # copt = extract(new_stk[[7]], spt3)
   
   #EXTRACT
-  sapt = extract(new_stk[[1]], spt3)
-  tspt = extract(new_stk[[4]], spt3)
-  dspt = extract(new_stk[[5]], spt3)
-  rept = extract(new_stk[[6]], spt3)
-  copt = extract(new_stk[[7]], spt3)
+  sapt = cellStats(new_stk[[1]], mean)
+  tspt = cellStats(new_stk[[4]], mean)
+  dspt = cellStats(new_stk[[5]], mean)
+  rept = cellStats(new_stk[[6]], mean)
+  copt = cellStats(new_stk[[7]], mean)
   
   p_ch = c(13,14,17,18,3)
-  
-  
+  p_ch = c(20,20,20,20,20)
+  y_lim = c(-150,100) #c(-1,1) #c(-150,100)
   # ### PLOTS >>>
   if (m == 1){ # could do 2 plots -- compare Ib Id Ir
     #png(paste('images/models_g',g,'_',round(dem_res),'.png',sep=''))
-    plot(1:length(zenith),rep(NA,length(zenith)),ylim=c(-350,200), # ylim=c(-300,120)
-         main='',ylab=expression(Irradiance~(Wm^-2)),xlab='Sun hour',cex.lab=1.6,cex.axis=1.6)
+    plot(1:length(zenith),rep(NA,length(zenith)),ylim=y_lim, # ylim=c(-300,120)
+         main='',ylab=expression(Irradiance~(Wm^-2)),xlab='Solar moment',cex.lab=1.6,cex.axis=1.6)
     legend('bottom',c('Incidence angle','Topographic shading','Diffuse sky','Terrain-reflected', 'Combined'),
-           pch=c(13,14,17,18,3),cex=1.4, col = cols[c(1,4:7)])
+           pch=c(13,14,17,18,3),cex=1.4) #, col = cols[c(1,4:7)])
     abline(h=0,lty=3)
     #legend('topleft',paste('DEM resolution:',round(dem_res),'m'),bty='n',cex=0.8)
-    points(m,sapt,pch=13,cex = 2, col = cols[1])
-    points(m,tspt,pch=14,cex = 2, col = cols[4])
-    points(m,dspt,pch=17,cex = 1, col = cols[5])
-    points(m,rept,pch=18,cex = 1.5, col = cols[6])
-    points(m,copt,pch=3,cex = 3, col = cols[7])
+    points(m,sapt,pch=13,cex = 1.5) #, col = cols[1])
+    points(m,tspt,pch=14,cex = 1.5) #, col = cols[4])
+    points(m,dspt,pch=17,cex = 1) #, col = cols[5])
+    points(m,rept,pch=18,cex = 1.5) #, col = cols[6])
+    points(m,copt,pch=3,cex = 2) #, col = cols[7])
   } else{
-    points(m,sapt,pch=13,cex = 2, col = cols[1])
-    points(m,tspt,pch=14,cex = 2, col = cols[4])
-    points(m,dspt,pch=17,cex = 1, col = cols[5])
-    points(m,rept,pch=18,cex = 1.5, col = cols[6])
-    points(m,copt,pch=3,cex = 3, col = cols[7])
+    points(m,sapt,pch=13,cex = 1.5) #, col = cols[1])
+    points(m,tspt,pch=14,cex = 1.5) #, col = cols[4])
+    points(m,dspt,pch=17,cex = 1) #, col = cols[5])
+    points(m,rept,pch=18,cex = 1.5) #, col = cols[6])
+    points(m,copt,pch=3,cex = 2) #, col = cols[7])
   }
   ## END PLOTS >>>
 }
