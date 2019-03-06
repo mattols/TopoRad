@@ -154,6 +154,7 @@ p.sw.elv <- function(df, res=NULL, y_lim = c(-250,100), placeLegend = 'bottomlef
   
   # exclude any NA values
   dfg <- dfg[!is.na(dfg[,7]),]
+  dfg <- dfg[!is.na(dfg[,1]),]
   
   # make plots
   plot(smooth.spline(dfg[,1]~dfg[,9]), type = 'l', col='white',
