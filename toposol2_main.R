@@ -9,8 +9,8 @@
 
 ###############################################
 ## load functions and data
-source('F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/SRC2/toposol2_functions.R')
-source('F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/SRC2/toposol2_plots.R')
+source('F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/SRC2/toposol2_functions.R', echo = FALSE)
+source('F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/SRC2/toposol2_plots.R', echo = FALSE)
 
 ###############################################
 ## load data
@@ -23,8 +23,14 @@ load.wv.dat(dpath, gpath)
 # df <- sw.res(demL, shape = glaciers[2,])                            #(create resolution anomaly df for north facing glacier)
 # df <- sw.res(demL, shape = glaciers[5,], gn= 5, resampleFactor = c(1,12), savepath = NULL)
 
-svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/perc_march/pm_"
-dfga <- sw.glacier.res(date = ISOdate(2017, 3, 21, 0), savepath = svp)
+
+## RUN RUN RUN
+#### RUN RUN RUN RUN
+# line 182 of toposol2_functions (Percentage = TRUE/FALSE)
+svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/NEW_variables/march_irr/mi_"
+dfga <- sw.glacier.res(date = ISOdate(2017, 3, 21, 0), savepath = svp, perc=FALSE)
+#### RUN RUN RUN RUN
+## RUN RUN RUN
 
 # plotting?
 # 

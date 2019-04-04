@@ -23,7 +23,7 @@ load.wv.dat <- function(dpath, gpath){
 }
 
 ###############################################
-sw.glacier.res <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/"){
+sw.glacier.res <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/", perc = FALSE){
   # iterates through all glaciers indices given and calls sw.res
   # returns anomaly dataframe for all glaciers
   strt = Sys.time()
@@ -31,7 +31,7 @@ sw.glacier.res <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/
   g_num     <- length(glaciers@polygons)
   for (g in 1:g_num){
     # run for single glacier
-    dfg <- sw.res(demL, shape = glaciers[g,], gn = g, date = date, savepath = savepath) # anomaly for g
+    dfg <- sw.res(demL, shape = glaciers[g,], gn = g, date = date, savepath = savepath, perc=perc) # anomaly for g
     
     # compile dataframe
     if (g == 1){dfga = dfg} else{dfga = rbind(dfga,dfg)}
@@ -47,7 +47,7 @@ sw.glacier.res <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/
 }
 
 ###############################################
-sw.res <- function(demL, shape, gn = NA, date = ISOdate(2017, 6, 21, 0), resampleFactor = c(1,3,4,12,20,33,65,130), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/", isave = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/images_tmp/"){
+sw.res <- function(demL, shape, gn = NA, date = ISOdate(2017, 6, 21, 0), resampleFactor = c(1,3,4,12,20,33,65,130), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/", perc = FALSE, isave = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/images_tmp/"){
   # creates a dataframe of daily values at each resolution for a given glacier
   # creates anomaly dataframe
   strt = Sys.time()
@@ -56,7 +56,7 @@ sw.res <- function(demL, shape, gn = NA, date = ISOdate(2017, 6, 21, 0), resampl
   for (rf in resampleFactor){
     print(paste("> Starting resolution:", rf, "   ", match(rf,resampleFactor), "of", length(resampleFactor), "   for glacier", gn))
     location.variables(demL, shape, resampleFactor = rf)
-    tfstk <- sw.daily(date)
+    tfstk <- sw.daily(date, perc=perc)
     # save output of each resolution to one dataframe
     dft <- sw.res.dataframe(tfstk)
     
@@ -140,7 +140,7 @@ sw.res.dataframe <- function(tfstk){
 }
 
 ###############################################
-sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE, plot_moment = FALSE){
+sw.daily <- function(date = ISOdate(2017, 6, 21, 0), perc = FALSE, sw_totals = FALSE, plot_moment = FALSE){
   # daily sw variables -> call sw.moment()
   year  <- format(date,'%Y')
   month <- format(date,'%m')
@@ -179,7 +179,7 @@ sw.daily <- function(date = ISOdate(2017, 6, 21, 0), sw_totals = FALSE, plot_mom
   if (sw_totals){
     tfstk <- sw.totals.stk(keepAll = FALSE, mask=FALSE, savevar = NULL)
   } else{
-    tfstk = sw.change.stk(zenith, average=TRUE, percentage=TRUE, savevar = NULL, mask_inner = FALSE)
+    tfstk = sw.change.stk(zenith, average=TRUE, percentage=perc, savevar = NULL, mask_inner = FALSE)
   }
   print(proc.time() - ptm)
   return(tfstk)
@@ -461,9 +461,24 @@ crop.raster <- function(stk, shp, buffer = 0.03){
 }
 
 ###############################################
-new.resolution <- function(dem, resample_factor, funct = mean, methd = 'bilinear'){
+gauss.window <- function(sigma=2, n=5) { #(spatialEco)
+  m <- matrix(ncol=n, nrow=n)
+  mcol <- rep(1:n, n)
+  mrow <- rep(1:n, each=n)
+  x <- mcol - ceiling(n/2)
+  y <- mrow - ceiling(n/2)
+  m[cbind(mrow, mcol)] <- 1/(2*pi*sigma^2) * exp(-(x^2+y^2)/(2*sigma^2))
+  m / sum(m)
+}
+
+###############################################
+new.resolution <- function(dem, resample_factor, sigma = 2, wn = 5, funct = mean, methd = 'bilinear'){
   print(paste('Resolution resampled by', resample_factor))
-  agg <- aggregate(dem,fact=resample_factor,fun=funct)
+  # low pass gaussian filter to prevent aliasing
+  gm <- gauss.window(sigma=sigma, n=wn)
+  smooth.dem <- focal(dem, w = gm, fun = funct, na.rm=TRUE, pad=FALSE)
+  # resampling method
+  agg <- aggregate((smooth.dem*(wn**2)),fact=resample_factor,fun=funct)
   ndem = resample(dem, agg, method=methd)
   return(ndem)
 }
