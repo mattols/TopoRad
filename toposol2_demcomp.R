@@ -24,10 +24,10 @@ dem_ls = list(wv_dem, aster_dem, srtm_dem, alos_dem, wv_dem)
 # df_alos <- sw.res(alos_dem, shape = glaciers[2,])
 
 #################################################
-sw.dem.comp <- function(dem_ls, shape, gn = NA, date = ISOdate(2017, 3, 21, 0) , savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/", isave = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/images_tmp/"){
+sw.dem.comp <- function(dem_ls, shape, gn = NA, date = ISOdate(2017, 3, 21, 0), perc = FALSE, savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/", isave = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/images_tmp/"){
   # creates a dataframe of daily values at each resolution for a given glacier
   # creates anomaly dataframe
-  dem_names = c("WV", "ASTER","SRTM", "ALOS", "WV30")
+  dem_names = c("HiMAT8m", "ASTER","SRTM", "ALOS", "HiMAT30m")
   strt = Sys.time()
   
   # loop through resolutions for single glacier
@@ -40,7 +40,7 @@ sw.dem.comp <- function(dem_ls, shape, gn = NA, date = ISOdate(2017, 3, 21, 0) ,
       location.variables(dem_ls[[dd]], shape, resampleFactor = 1)
     }
     
-    tfstk <- sw.daily(date)
+    tfstk <- sw.daily(date, perc = perc)
     # save output of each resolution to one dataframe
     dft <- sw.res.dataframe(tfstk)
     dft$dem <- dem_names[dd]
@@ -82,7 +82,7 @@ sw.dem.comp <- function(dem_ls, shape, gn = NA, date = ISOdate(2017, 3, 21, 0) ,
 }
 
 ###############################################
-sw.glacier.dems <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/"){
+sw.glacier.dems <- function(date = ISOdate(2017, 6, 21, 0), perc=FALSE, savepath = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/"){
   # iterates through all glaciers indices given and calls sw.res
   # returns anomaly dataframe for all glaciers
   strt = Sys.time()
@@ -90,7 +90,7 @@ sw.glacier.dems <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT
   g_num     <- length(glaciers@polygons)
   for (g in 1:g_num){
     # run for single glacier
-    dfg <- sw.dem.comp(dem_ls = dem_ls, shape = glaciers[g,], gn = g, date = date) # anomaly for g
+    dfg <- sw.dem.comp(dem_ls = dem_ls, shape = glaciers[g,], gn = g, date = date, perc = perc) # anomaly for g
     
     # compile dataframe
     if (g == 1){dfga = dfg} else{dfga = rbind(dfga,dfg)}
@@ -106,5 +106,6 @@ sw.glacier.dems <- function(date = ISOdate(2017, 6, 21, 0), savepath = "F:/HiMAT
 }
 
 # run code for all DEMs and glaciers
-dfga <- sw.glacier.dems(date = ISOdate(2017, 3, 21, 0))
+svp = svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp_perc/demp_"
+dfga <- sw.glacier.dems(date = ISOdate(2017, 3, 21, 0), perc=TRUE, savepath = svp)
 

@@ -27,8 +27,8 @@ load.wv.dat(dpath, gpath)
 ## RUN RUN RUN
 #### RUN RUN RUN RUN
 # line 182 of toposol2_functions (Percentage = TRUE/FALSE)
-svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/NEW_variables/march_irr/mi_"
-dfga <- sw.glacier.res(date = ISOdate(2017, 3, 21, 0), savepath = svp, perc=FALSE)
+svp = "F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/NEW_variables/march_perc/mp_"
+dfga <- sw.glacier.res(date = ISOdate(2017, 3, 21, 0), savepath = svp, perc=TRUE)
 #### RUN RUN RUN RUN
 ## RUN RUN RUN
 
@@ -56,7 +56,7 @@ p.sw.anom(dfa2,y_lim = c(-10,30), plot4 = FALSE, topovar = 7)
 # try to calculate percentage for 90m north glacier
 dftmp <- sw.res(demL, shape = glaciers[2,], gn= 2, resampleFactor = 4, savepath = NULL)
 dftmp2 = read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/perc_march/pm_dftf_2.csv")
-p.sw.elv(dftmp2,res=8, y_lim = c(-90,30))
+p.sw.elv(dftmp2,res=8, y_lim = c(-110,30))
 
 
 p.sw.anom(dfa,y_lim = c(-50,100))

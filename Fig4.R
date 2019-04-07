@@ -177,7 +177,7 @@ p.sw.dem.anom <- function(df, mod = 7, y_lim = c(-100,100), dem_ls = c("ASTER","
 }
 
 
-
+# Fig 7
 # north glacier anomaly
 dfadem2 <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/dem_comp/dfa_2.csv")
 p.sw.dem.anom(dfadem2, mod = 7, y_lim = c(-150,110), dem_ls = c("ASTER","SRTM", "ALOS", "WV30"), placeLegend = "bottom")

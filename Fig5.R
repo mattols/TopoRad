@@ -109,8 +109,8 @@ par(oma = c(2,3,0.8,0.5))
 par(mar=c(1.5,1,0,0))
 # anomalies for each season
 # march
-p.anom.fig5(dfa2m,y_lim = c(-30,90), drop_res = c(1,4,7), ax_bottom = FALSE)
-p.anom.fig5(dfa8m,y_lim = c(-30,90), drop_res = c(1,4,7), placeLegend = 0)
+p.anom.fig5(dfa2m,y_lim1 = c(-30,90), drop_res = c(1,4,7), ax_bottom = FALSE)
+p.anom.fig5(dfa8m,y_lim2 = c(-30,90), drop_res = c(1,4,7), placeLegend = 0)
 # june
 p.anom.fig5(dfa2j,y_lim = c(-30,90), drop_res = c(1,4,7), ax_bottom = FALSE)
 p.anom.fig5(dfa8j,y_lim = c(-30,90), drop_res = c(1,4,7), placeLegend = 0)
@@ -123,7 +123,7 @@ p.anom.fig5(dfa2d,y_lim = c(-140,200), drop_res = c(1,4,7), placeLegend = 0)
 # change line types!
 
 
-#
+# FIG 6 (now 5) - combined glaciers
 #### PLOT ANOMALY FOR ALL GLACIERS AT ONE RESOLUTION
 dfga_j <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/june21_all/dfga.csv")
 dfga_m <- read.csv("F:/HiMAT/MATTO/PROJECTS/WV_RESOLUTION/variables/march21_all/dfga.csv")
