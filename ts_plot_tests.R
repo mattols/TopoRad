@@ -4,6 +4,7 @@
 #
 #
 
+# select glacier
 location.variables(demL, shape = glaciers[2,], resampleFactor = 3)
 
 

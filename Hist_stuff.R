@@ -11,6 +11,7 @@ p.hist.dem <- function(df, y_lim = c(0,0.01)){
   l_ty = c(1,2,3,4,1)
   l_wd = c(6,3,3,2,3)
   dem_ls = c("WV", "ASTER","SRTM", "ALOS", "WV30")
+  dem_ls = c("HiMAT8m", "ASTER","SRTM", "ALOS", "HiMAT30m")
   
   dens = density(df[df$dem == dem_ls[5],]$Combined, bw=1)
   # dens$y = length(df[df$dem == dem_ls[2],]$Combined)/sum(dens$y) * dens$y

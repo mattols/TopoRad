@@ -147,7 +147,7 @@ p.anom.glaciers <- function(df, y_lim = c(-40,100), res = 2){
   # normalize elevation (0-1)
   dfg$Enorm = dfg$Elevation1 - min(dfg$Elevation1)
   dfg$Enorm = dfg$Enorm/max(dfg$Enorm)
-  plot(smooth.spline(dfg[,7]~dfg$Enorm), type = 'l', col=colss[j],
+  plot(smooth.spline(dfg[,7]~dfg$Enorm), type = 'l', col=colss[1],
        ylim=y_lim, ylab='', lwd = l_wd,
        lty = l_ty,xlab='',cex.axis=1.8,cex.lab=1.3)
   abline(h=0,lty=3)
@@ -167,7 +167,10 @@ p.anom.glaciers <- function(df, y_lim = c(-40,100), res = 2){
 
 p.anom.glaciers(dfga_m,  y_lim = c(-30,100), res=2) # 30 m
 p.anom.glaciers(dfga_m,  y_lim = c(-30,100), res=3) # 90 m
+p.anom.glaciers(dfga_m,  y_lim = c(-30,300), res=6) # 500 m
+p.anom.glaciers(dfga_m,  y_lim = c(-30,300), res=5) # 500 m
 
+res_ls
 # old methods
 p.sw.anom(dfga_m, y_lim = c(-30,100), drop_res = c(1,4,7), plot4 = FALSE, topovar = 7, multi_glacier = TRUE)
 p.anom.fig5(dfga_m, y_lim = c(-40,100), drop_res = c(1,4,7), topovar = 7, multi_glacier = TRUE)
