@@ -156,7 +156,7 @@ p.sw.dem.anom <- function(df, mod = 7, y_lim = c(-100,100), dem_ls = c("ASTER","
   dfg <- df[df$dem == dem_ls[1],]
   dfg <- dfg[!is.na(dfg[,7]),]
   
-  dfg$L = (dfg$Elevation - min(dfg$Elevation))
+  #dfg$L = (dfg$Elevation - min(dfg$Elevation))
   
   # make plots
   plot(smooth.spline(dfg[,mod]~dfg[,10]), type = 'l', col='white',
